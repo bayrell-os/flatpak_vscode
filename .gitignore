@@ -1,0 +1,5 @@
+.flatpak-builder
+app 
+build-dir
+repo
+test

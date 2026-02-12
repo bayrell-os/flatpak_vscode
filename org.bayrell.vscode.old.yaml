@@ -1,0 +1,58 @@
+id: org.bayrell.vscode
+runtime: org.freedesktop.Platform
+runtime-version: '24.08'
+sdk: org.freedesktop.Sdk
+command: code
+finish-args:
+  - --share=network
+  - --share=ipc
+  - --socket=system-bus
+  - --socket=session-bus
+  - --socket=x11
+  - --socket=wayland
+  - --device=dri
+  - --env=DOTNET_ROOT=/app/lib/dotnet8
+add-extensions:
+  org.freedesktop.Sdk.Extension.dotnet8:
+modules:
+  - name: imagemagick
+    buildsystem: autotools
+    sources:
+      - type: git
+        url: https://github.com/ImageMagick/ImageMagick
+        tag: 7.1.2-13
+        commit: dd991e286b96918917a3392d6dc3ffc0e6907a4e
+  - name: dotnet
+    buildsystem: simple
+    build-commands:
+      - mkdir -p /app/bin
+      - mkdir -p /app/lib/dotnet8
+      - cp -r /usr/lib/sdk/dotnet8 /app/lib/
+      - ln -s /app/lib/dotnet8/lib/dotnet /app/bin/dotnet
+  - name: wrapper
+    buildsystem: simple
+    build-commands:
+      - install -Dm755 code.sh /app/bin/code
+    sources:
+      - type: script
+        dest-filename: code.sh
+        commands:
+          - exec /app/share/code/code --no-sandbox "$@"
+  - name: deb
+    buildsystem: simple
+    build-commands:
+      - ar x code.deb
+      - tar xf data.tar.xz
+      - cp -r usr/* /app/
+      - mkdir -p /app/share/icons/{64x64,128x128,256x256,512x512}
+      - magick /app/share/pixmaps/vscode.png -resize 64x64 /app/share/icons/64x64/org.bayrell.vscode.png
+      - magick /app/share/pixmaps/vscode.png -resize 128x128 /app/share/icons/128x128/org.bayrell.vscode.png
+      - magick /app/share/pixmaps/vscode.png -resize 256x256 /app/share/icons/256x256/org.bayrell.vscode.png
+      - magick /app/share/pixmaps/vscode.png -resize 512x512 /app/share/icons/512x512/org.bayrell.vscode.png
+      - install -Dm644 org.bayrell.vscode.desktop /app/share/applications/org.bayrell.vscode.desktop
+    sources:
+      - type: file
+        dest-filename: code.deb
+        path: app/code_1.105.1-1760482543_amd64.deb
+      - type: file
+        path: org.bayrell.vscode.desktop

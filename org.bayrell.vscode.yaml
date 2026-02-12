@@ -1,0 +1,91 @@
+id: org.bayrell.vscode
+runtime: org.freedesktop.Sdk
+runtime-version: '24.08'
+sdk: org.freedesktop.Sdk
+command: code
+finish-args:
+  - --share=network
+  - --share=ipc
+  - --socket=system-bus
+  - --socket=session-bus
+  - --socket=x11
+  - --socket=wayland
+  - --device=dri
+  - --env=PATH=/app/bin:/usr/bin:~/.var/app/org.bayrell.vscode/data/python/bin:~/.var/app/org.bayrell.vscode/data/node_modules/.bin
+  - --env=DOTNET_ROOT=/app/lib/dotnet8
+  - --env=SHELL=/bin/bash
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.dotnet8
+modules:
+  - name: git
+    buildsystem: simple
+    build-commands:
+      - make configure
+      - ./configure --prefix=/app
+      - make
+      - make install prefix=/run/build/install && cp -rf /run/build/install/* /app/
+    sources:
+      - type: git
+        url: https://github.com/git/git
+        tag: v2.34.1
+        commit: e9d7761bb94f20acc98824275e317fa82436c25d
+  - name: imagemagick
+    buildsystem: autotools
+    sources:
+      - type: git
+        url: https://github.com/ImageMagick/ImageMagick
+        tag: 7.1.2-13
+        commit: dd991e286b96918917a3392d6dc3ffc0e6907a4e
+  - name: mc
+    buildsystem: autotools
+    sources:
+      - type: git
+        url: https://github.com/MidnightCommander/mc
+        tag: 4.8.29
+        commit: a4d254c6ecfac54358e8afebc90106022c1d108b
+  - name: nodejs
+    buildsystem: simple
+    build-commands:
+      - tar xf ./node-v24.13.1-linux-x64.tar.xz
+      - cp -r ./node-v24.13.1-linux-x64 /app/lib
+      - mkdir -p /app/bin
+      - ln -s /app/lib/node-v24.13.1-linux-x64/bin/node /app/bin/node
+    sources:
+      - type: file
+        url: https://nodejs.org/dist/v24.13.1/node-v24.13.1-linux-x64.tar.xz
+        sha256: 30215f90ea3cd04dfbc06e762c021393fa173a1d392974298bbc871a8e461089
+  - name: dotnet
+    buildsystem: simple
+    build-commands:
+      - mkdir -p /app/bin
+      - mkdir -p /app/lib/dotnet8
+      - cp -r /usr/lib/sdk/dotnet8 /app/lib/
+      - ln -s /app/lib/dotnet8/lib/dotnet /app/bin/dotnet
+  - name: wrapper
+    buildsystem: simple
+    build-commands:
+      - install -Dm755 code.sh /app/bin/code
+    sources:
+      - type: script
+        dest-filename: code.sh
+        commands:
+          - exec /app/share/code/code --no-sandbox --extensions-dir=${XDG_DATA_HOME}/extensions --disable-updates --password-store="basic" "$@"
+  - name: deb
+    buildsystem: simple
+    build-commands:
+      - ar x code.deb
+      - tar xf data.tar.xz
+      - cp -r usr/* /app/
+      - mkdir -p /app/share/icons/hicolor/{64x64,128x128,256x256,512x512}/apps
+      - magick /app/share/pixmaps/vscode.png -resize 64x64 /app/share/icons/hicolor/64x64/apps/org.bayrell.vscode.png
+      - magick /app/share/pixmaps/vscode.png -resize 128x128 /app/share/icons/hicolor/128x128/apps/org.bayrell.vscode.png
+      - magick /app/share/pixmaps/vscode.png -resize 256x256 /app/share/icons/hicolor/256x256/apps/org.bayrell.vscode.png
+      - magick /app/share/pixmaps/vscode.png -resize 512x512 /app/share/icons/hicolor/512x512/apps/org.bayrell.vscode.png
+      - install -Dm644 org.bayrell.vscode.desktop /app/share/applications/org.bayrell.vscode.desktop
+    sources:
+      - type: file
+        dest-filename: code.deb
+        url: https://update.code.visualstudio.com/1.105.1/linux-deb-x64/stable
+        sha256: 456acb8c6f2b146098e486ae4b4e9e50a4f344dbd168da60c10d6ac12bcab29b
+      - type: file
+        path: org.bayrell.vscode.desktop
