@@ -7,3 +7,9 @@ cd flatpak_vscode
 ./build.sh build
 ./build.sh install
 ```
+
+Export:
+```
+./build.sh export
+./build.sh import
+```

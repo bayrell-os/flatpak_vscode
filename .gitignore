@@ -1,5 +1,5 @@
 .flatpak-builder
-app 
+app
 build-dir
 repo
 test

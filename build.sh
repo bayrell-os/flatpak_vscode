@@ -22,7 +22,12 @@ case "$1" in
 	;;
 	
 	export)
-		flatpak build-bundle repo org.bayrell.vscode.flatpak org.bayrell.vscode
+		mkdir app
+		flatpak build-bundle repo ./app/org.bayrell.vscode.flatpak org.bayrell.vscode
+	;;
+	
+	import)
+		sudo flatpak install ./app/org.bayrell.vscode.flatpak
 	;;
 	
 	debug)
