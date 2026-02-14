@@ -17,18 +17,6 @@ finish-args:
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.dotnet8
 modules:
-  - name: git
-    buildsystem: simple
-    build-commands:
-      - make configure
-      - ./configure --prefix=/app
-      - make
-      - make install prefix=/run/build/install && cp -rf /run/build/install/* /app/
-    sources:
-      - type: git
-        url: https://github.com/git/git
-        tag: v2.34.1
-        commit: e9d7761bb94f20acc98824275e317fa82436c25d
   - name: imagemagick
     buildsystem: autotools
     sources:
@@ -50,6 +38,7 @@ modules:
       - cp -r ./node-v24.13.1-linux-x64 /app/lib
       - mkdir -p /app/bin
       - ln -s /app/lib/node-v24.13.1-linux-x64/bin/node /app/bin/node
+      - ln -s /app/lib/node-v24.13.1-linux-x64/bin/npm /app/bin/npm
     sources:
       - type: file
         url: https://nodejs.org/dist/v24.13.1/node-v24.13.1-linux-x64.tar.xz

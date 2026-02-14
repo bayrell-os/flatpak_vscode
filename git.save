@@ -1,6 +1,0 @@
-- install -d -m 755 '/app/bin'
-- install -d -m 755 '/app/libexec/git-core'
-- install git-daemon git-http-backend git-imap-send git-sh-i18n--envsubst git-shell git-http-fetch git-http-push git-remote-http git-remote-https git-remote-ftp git-remote-ftps '/app/libexec/git-core'
-- install git-bisect git-difftool--helper git-filter-branch git-merge-octopus git-merge-one-file git-merge-resolve git-mergetool git-quiltimport git-request-pull git-submodule git-web--browse git-add--interactive git-archimport git-cvsexportcommit git-cvsimport git-cvsserver git-send-email git-svn git-p4 git-instaweb '/app/libexec/git-core'
-- install -m 644 git-mergetool--lib git-sh-i18n git-sh-setup '/app/libexec/git-core'
-- install git git-receive-pack git-shell git-upload-archive git-upload-pack '/app/bin' 
