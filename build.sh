@@ -17,6 +17,11 @@ case "$1" in
 		fi
 	;;
 	
+	build_install)
+		flatpak-builder build-dir org.bayrell.vscode.yaml --force-clean --install-deps-from=flathub --repo=repo &&
+			flatpak-builder --user --install --force-clean build-dir org.bayrell.vscode.yaml
+	;;
+	
 	build)
 		flatpak-builder build-dir org.bayrell.vscode.yaml --force-clean --install-deps-from=flathub --repo=repo
 	;;
@@ -43,11 +48,16 @@ case "$1" in
 	;;
 	
 	install)
-		flatpak-builder --user --install --force-clean build-dir org.bayrell.vscode.yaml
+		mkdir -p app
+		if [ -f ./app/org.bayrell.vscode.flatpak ]; then
+			rm -f ./app/org.bayrell.vscode.flatpak
+		fi
+		flatpak build-bundle repo ./app/org.bayrell.vscode.flatpak org.bayrell.vscode && \
+			sudo flatpak install ./app/org.bayrell.vscode.flatpak
 	;;
 	
 	*)
-		echo "Usage: $0 {download|build|export|run|debug|install}"
+		echo "Usage: $0 {download|build_install|build|export|run|debug|install}"
 	;;
 	
 esac 

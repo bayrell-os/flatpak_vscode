@@ -1,15 +1,13 @@
 # VSCode Flatpak app
 
-Build and install
+Build:
 ```
 git clone https://github.com/bayrell-os/flatpak_vscode
 cd flatpak_vscode
 ./build.sh build
-./build.sh install
 ```
 
-Export:
+Install:
 ```
-./build.sh export
-./build.sh import
+./build.sh install
 ```
